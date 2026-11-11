@@ -52,7 +52,10 @@ pub trait SolidKernel {
     fn subtract(&mut self, a: SolidId, b: SolidId) -> Result<SolidId>;
     /// INTERSECT
     fn intersect(&mut self, a: SolidId, b: SolidId) -> Result<SolidId>;
-    /// 表示用に三角形分割する。`chord_tolerance` は弦誤差の上限。
+    /// 体積（相対精度 1e-7 程度）。
+    fn volume(&self, solid: SolidId) -> Result<f64>;
+    /// 表示用に三角形分割する。フラットシェーディング用に、三角形ごとに頂点と面法線を持つ。
+    /// `chord_tolerance` は弦誤差の上限。
     fn tessellate(&self, solid: SolidId, chord_tolerance: f64) -> Result<Mesh>;
     fn delete(&mut self, solid: SolidId) -> Result<()>;
 }
