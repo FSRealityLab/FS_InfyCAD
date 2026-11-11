@@ -1,0 +1,3 @@
+# Windows 版は C ランタイムを静的リンクし、exe 1 つで配れるようにする（VC++ 再頒布パッケージ不要）。
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

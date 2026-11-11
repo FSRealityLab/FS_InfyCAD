@@ -1,0 +1,16 @@
+[package]
+name = "infycad-app"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "infycad"
+path = "src/main.rs"
+
+[dependencies]
+infycad-core = { path = "../infycad-core" }
+infycad-kernel = { path = "../infycad-kernel" }
+infycad-smlib = { path = "../infycad-smlib" }
+eframe = { version = "*", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }
+glam = "*"

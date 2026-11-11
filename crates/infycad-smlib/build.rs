@@ -21,6 +21,12 @@ fn sources(dir: &Path, skip: &[&str]) -> Vec<PathBuf> {
 fn build(name: &str, files: &[PathBuf], includes: &[&Path]) {
     let mut b = cc::Build::new();
     b.cpp(true).std("c++17").warnings(false).flag_if_supported("-w");
+    // MSVC: SmBrep.cpp などが大きい / ソースは UTF-8 / Windows.h の min・max マクロを止める。
+    // SM_API_EXPORTS が無いと SM_API の宣言が dllimport になり、静的リンクできない。
+    b.flag_if_supported("/bigobj").flag_if_supported("/utf-8").flag_if_supported("/EHsc");
+    if std::env::var("CARGO_CFG_WINDOWS").is_ok() {
+        b.define("NOMINMAX", None).define("SM_API_EXPORTS", None).define("_CRT_SECURE_NO_WARNINGS", None);
+    }
     for inc in includes {
         b.include(inc);
     }

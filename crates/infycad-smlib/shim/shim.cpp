@@ -7,6 +7,7 @@
 #include <SmApiQueries.h>
 #include <SmBrep.h>
 #include <SmPoly.h>
+#include <SmThreadLocalStorage.h>
 #include <SmVector3d.h>
 
 #include <cstdlib>
@@ -39,6 +40,10 @@ extern "C"
 {
 void infy_init()
 {
+#ifdef _WIN32
+    // 上流は DLL 前提で、スレッドローカル領域を DllMain で確保する。静的リンクでは自分で呼ぶ。
+    SmThreadLocalStorage::SetupTLS(SM_TLS_PROCESS_ATTACH);
+#endif
     SmApiCreateContext();
 }
 
@@ -129,6 +134,9 @@ int infy_tessellate(const void* brep, double chord, double** positions, double**
     return Guard([&] {
         SmTessellationParams params;
         params.dChordHeightTol = chord;
+        // 既定の 25 度では曲面が粗く見えるので、表示用に細かくする。
+        params.dCurveAngleTolDeg = 10.0;
+        params.dSurfaceAngleTolDeg = 10.0;
         SmPolyBrep* poly = nullptr;
         SmApiStatus status = SmApiTessellate(static_cast<SmBrep*>(const_cast<void*>(brep)), poly, params);
         if (status != SM_SUCCESS || poly == nullptr)

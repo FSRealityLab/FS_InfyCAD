@@ -6,3 +6,6 @@ members = ["crates/*"]
 version = "0.0.1"
 edition = "2024"
 publish = false
+
+[profile.release]
+lto = "thin"
