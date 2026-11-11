@@ -8,17 +8,23 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
       - uses: Swatinem/rust-cache@v2
-      - name: Test
-        run: cargo test --release
       - name: Build
-        run: cargo build --release -p infycad-app
+        timeout-minutes: 60
+        run: cargo build --release -p infycad-app -vv
       - uses: actions/upload-artifact@v4
         with:
           name: FS_InfyCAD-windows-x64
           path: target/release/infycad.exe
           if-no-files-found: error
+      - name: Build tests
+        timeout-minutes: 30
+        run: cargo test --release --no-run
+      - name: Test
+        timeout-minutes: 10
+        run: cargo test --release -- --test-threads=1 --nocapture
